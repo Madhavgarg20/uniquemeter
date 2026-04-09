@@ -159,6 +159,19 @@ async function classifyResults(
 // ─── Route handler ───────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json(
+      { error: "GROQ_API_KEY is not configured." },
+      { status: 500 }
+    );
+  }
+  if (!process.env.TAVILY_API_KEY) {
+    return NextResponse.json(
+      { error: "TAVILY_API_KEY is not configured." },
+      { status: 500 }
+    );
+  }
+
   try {
     const { idea } = (await req.json()) as { idea: RestructuredIdea };
 
@@ -222,9 +235,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(classified);
   } catch (error) {
-    console.error("[/api/search] Error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[/api/search] Error:", message);
     return NextResponse.json(
-      { error: "Search and classification failed. Please try again." },
+      { error: message },
       { status: 500 }
     );
   }

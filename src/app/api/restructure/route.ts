@@ -15,6 +15,13 @@ Return ONLY a valid JSON object with exactly these keys (no markdown, no preambl
 Ensure the JSON is valid. Do not wrap in code fences. Return the raw JSON only.`;
 
 export async function POST(req: NextRequest) {
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json(
+      { error: "GROQ_API_KEY is not configured." },
+      { status: 500 }
+    );
+  }
+
   try {
     const { idea } = await req.json();
 
@@ -36,9 +43,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("[/api/restructure] Error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[/api/restructure] Error:", message);
     return NextResponse.json(
-      { error: "Failed to restructure idea. Please try again." },
+      { error: message },
       { status: 500 }
     );
   }
