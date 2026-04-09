@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd uniquemeter && npm install && npm run build",
+  "outputDirectory": "uniquemeter/.next",
+  "installCommand": "cd uniquemeter && npm install",
+  "devCommand": "cd uniquemeter && npm run dev",
+  "framework": "nextjs"
+}
