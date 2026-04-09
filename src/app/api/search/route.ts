@@ -9,9 +9,6 @@ import type {
   SearchResponse,
 } from "@/lib/types";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY! });
-
 // ─── Generate 5 search queries from templates (no AI needed) ─────────────────
 
 function generateQueries(idea: RestructuredIdea): string[] {
@@ -98,6 +95,7 @@ async function classifyResults(
   idea: RestructuredIdea,
   results: SearchResult[]
 ): Promise<SearchResponse> {
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   const userContent = JSON.stringify({ idea, search_results: results });
 
   const completion = await groq.chat.completions.create({
@@ -170,6 +168,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY! });
 
     // 1) Generate 5 query strings from templates
     const queries = generateQueries(idea);

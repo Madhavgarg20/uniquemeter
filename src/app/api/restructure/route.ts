@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import type { RestructuredIdea } from "@/lib/types";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 const SYSTEM_PROMPT = `You are a startup idea analyst. The user will give you a raw idea description.
 Return ONLY a valid JSON object with exactly these keys (no markdown, no preamble, no explanation):
 {
@@ -50,6 +48,7 @@ async function callGroqWithRetry(
   idea: string,
   retries = 1
 ): Promise<RestructuredIdea> {
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const completion = await groq.chat.completions.create({
